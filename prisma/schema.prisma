@@ -1,0 +1,43 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          Int       @id @default(autoincrement())
+  username    String    @unique
+  totalScore  Int       @default(0)   // Renamed to avoid confusion
+  createdAt   DateTime  @default(now())
+  gameId      Int?     
+  gameroom    GameRoom? @relation(fields: [gameId], references: [id])
+  scores      Score[]   // One-to-many relation with Score
+}
+
+model GameRoom {
+  id          Int       @id @default(autoincrement())
+  code        String    @unique
+  players     User[]
+  isStarted   Boolean   @default(false)
+  scores      Score[]   // Added this to complete the relation with Score
+}
+
+model Question {
+  id            Int      @id @default(autoincrement())
+  text          String
+  options       String[] 
+  correctAnswer String
+  difficulty    String   
+}
+
+model Score {
+  id          Int       @id @default(autoincrement())
+  user        User      @relation(fields: [userId], references: [id])
+  userId      Int
+  gameRoom    GameRoom  @relation(fields: [gameRoomId], references: [id])
+  gameRoomId  Int
+  points      Int
+}
