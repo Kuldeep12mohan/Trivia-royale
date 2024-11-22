@@ -26,6 +26,7 @@ const Avatar = () => {
             onClick={() => {
               console.log("Logging out...");
               localStorage.removeItem("triviaId");
+              router.push("/")
               window.location.reload();
 
             }} 

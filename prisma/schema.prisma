@@ -21,7 +21,7 @@ model User {
 
 model GameRoom {
   id          Int       @id @default(autoincrement())
-    code        String    @unique
+  code        String    @unique
   players     User[]
   isStarted   Boolean   @default(false)
   scores      Score[]   

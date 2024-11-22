@@ -2,8 +2,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-
-// Define types for the onClose function
+import { socket } from "../socket/socket";
 interface SubjectModalProps {
   onClose: () => void;
 }
@@ -28,12 +27,10 @@ const SubjectModal: React.FC<SubjectModalProps> = ({ onClose }) => {
 
   useEffect(() => {
     setIsModalVisible(true);
-    // Fetch userId from localStorage on the client side
     const storedUserId = localStorage.getItem("triviaId");
     if (storedUserId) {
       setUserId(storedUserId);
     }
-
     return () => setIsModalVisible(false);
   }, []);
 
@@ -43,7 +40,7 @@ const SubjectModal: React.FC<SubjectModalProps> = ({ onClose }) => {
       alert("User ID is not available. Please log in.");
       return;
     }
-
+    socket.emit("joinRoom",{userId,roomCode})
     try {
       const response = await axios.post("/api/gameroom/creategame", {
         code,
@@ -65,6 +62,7 @@ const SubjectModal: React.FC<SubjectModalProps> = ({ onClose }) => {
           userId:userId
         });
         console.log(response);
+        socket.emit("joinRoom",{userId,roomCode})
         router.push(`/waiting?code=${roomCode}`);
       } catch (error) {
         console.error("Error joining game room:", error);
